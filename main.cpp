@@ -181,6 +181,13 @@ int main(int argc, char *argv[]) {
 
 #pragma omp parallel for schedule(dynamic, 1) private(r)       // OpenMP
 	for (int y = 0; y < h; y++) { // Loop over image rows
+		SDL_Event event;
+		while (SDL_PollEvent(&event)) {
+			if(event.type == SDL_QUIT){
+				fprintf(stderr,"Received quit request, bailing out");
+				exit(1);
+			}
+		}
 		//fprintf(stderr,"\rRendering (%d spp) %5.2f%%",samps*4,100.*y/(h-1));
 		for (unsigned short x = 0, Xi[3] = {0, 0, y * y * y}; x < w; x++) { // Loop cols
 			for (int sy = 0, i = (h - y - 1) * w + x; sy < 2; sy++) { // 2x2 subpixel rows
