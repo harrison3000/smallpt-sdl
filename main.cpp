@@ -184,7 +184,7 @@ int main(int argc, char *argv[]) {
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
 			if(event.type == SDL_QUIT){
-				fprintf(stderr,"Received quit request, bailing out");
+				fprintf(stderr,"Received quit request, bailing out\n");
 				exit(1);
 			}
 		}
