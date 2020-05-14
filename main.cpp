@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <SDL2/SDL.h>
+#include <omp.h>
 
 struct pixelStr {
 	uint8_t b, g, r, a;
@@ -181,11 +182,14 @@ int main(int argc, char *argv[]) {
 
 #pragma omp parallel for schedule(dynamic, 1) private(r)       // OpenMP
 	for (int y = 0; y < h; y++) { // Loop over image rows
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			if(event.type == SDL_QUIT){
-				fprintf(stderr,"Received quit request, bailing out\n");
-				exit(1);
+		if(omp_get_thread_num() == 0){
+			SDL_UpdateWindowSurface(window);
+			SDL_Event event;
+			while (SDL_PollEvent(&event)) {
+				if(event.type == SDL_QUIT){
+					fprintf(stderr,"Received quit request, bailing out\n");
+					exit(1);
+				}
 			}
 		}
 		fprintf(stderr,"\rRendering (%d spp) %5.2f%%",samps*4,100.*y/(h-1));
@@ -209,7 +213,6 @@ int main(int argc, char *argv[]) {
 			framebuffer[curIndex].b = toInt(c[curIndex].z);
 
 		}
-		SDL_UpdateWindowSurface(window);
 	}
 	sleep(10);
 	printf("\n");
